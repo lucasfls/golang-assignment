@@ -10,6 +10,7 @@ import (
 	"syscall"
 
 	"github.com/joho/godotenv"
+	appcategory "github.com/mytheresa/go-hiring-challenge/internal/application/category"
 	appproduct "github.com/mytheresa/go-hiring-challenge/internal/application/product"
 	"github.com/mytheresa/go-hiring-challenge/internal/infrastructure/persistence"
 	"github.com/mytheresa/go-hiring-challenge/internal/ports/http/handler"
@@ -36,18 +37,24 @@ func main() {
 
 	// Initialize repositories
 	productRepo := persistence.NewProductsRepository(db)
+	categoryRepo := persistence.NewCategoriesRepository(db)
 
 	// Initialize application use cases
 	listCatalogUC := appproduct.NewListCatalogUseCase(productRepo)
 	getProductDetailUC := appproduct.NewGetProductDetailUseCase(productRepo)
+	listCategoriesUC := appcategory.NewListCategoriesUseCase(categoryRepo)
+	createCategoryUC := appcategory.NewCreateCategoryUseCase(categoryRepo)
 
 	// Initialize HTTP handlers (ports)
 	productHandler := handler.NewProductHandler(listCatalogUC, getProductDetailUC)
+	categoryHandler := handler.NewCategoryHandler(listCategoriesUC, createCategoryUC)
 
 	// Set up routing
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /catalog", productHandler.HandleListCatalog)
 	mux.HandleFunc("GET /catalog/{code}", productHandler.HandleGetProductDetail)
+	mux.HandleFunc("GET /categories", categoryHandler.HandleListCategories)
+	mux.HandleFunc("POST /categories", categoryHandler.HandleCreateCategory)
 
 	// Set up the HTTP server
 	srv := &http.Server{

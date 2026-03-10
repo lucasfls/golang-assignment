@@ -197,3 +197,213 @@ func TestProductHandler_HandleListCatalog_OffsetAndLimitTogether(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, int64(100), res.Total)
 }
+
+// TestProductHandler_HandleGetProductDetail tests GET /catalog/:code endpoint
+func TestProductHandler_HandleGetProductDetail(t *testing.T) {
+	// Arrange
+	mockRepo := appproduct.NewMockRepository().WithFindByCode(func(ctx context.Context, code string) (*product.Product, error) {
+		assert.Equal(t, "PROD001", code)
+		prod := appproduct.GetSampleProducts()[0]
+		return &prod, nil
+	})
+	listUC := appproduct.NewListCatalogUseCase(mockRepo)
+	detailUC := appproduct.NewGetProductDetailUseCase(mockRepo)
+	handler := NewProductHandler(listUC, detailUC)
+
+	// Act
+	req := httptest.NewRequest("GET", "/catalog/PROD001", nil)
+	req.SetPathValue("code", "PROD001")
+	w := httptest.NewRecorder()
+	handler.HandleGetProductDetail(w, req)
+
+	// Assert
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, "application/json", w.Header().Get("Content-Type"))
+
+	var res appproduct.DetailResponse
+	err := json.NewDecoder(w.Body).Decode(&res)
+	assert.NoError(t, err)
+	assert.Equal(t, "PROD001", res.Code)
+	assert.Equal(t, "29.99", res.Price)
+	assert.NotNil(t, res.Category)
+	assert.Equal(t, "CLOTHING", res.Category.Code)
+}
+
+// TestProductHandler_HandleGetProductDetail_WithVariants tests product with variants
+func TestProductHandler_HandleGetProductDetail_WithVariants(t *testing.T) {
+	// Arrange
+	mockRepo := appproduct.NewMockRepository().WithFindByCode(func(ctx context.Context, code string) (*product.Product, error) {
+		prod := appproduct.GetSampleProducts()[0]
+		return &prod, nil
+	})
+	listUC := appproduct.NewListCatalogUseCase(mockRepo)
+	detailUC := appproduct.NewGetProductDetailUseCase(mockRepo)
+	handler := NewProductHandler(listUC, detailUC)
+
+	// Act
+	req := httptest.NewRequest("GET", "/catalog/PROD001", nil)
+	req.SetPathValue("code", "PROD001")
+	w := httptest.NewRecorder()
+	handler.HandleGetProductDetail(w, req)
+
+	// Assert
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	var res appproduct.DetailResponse
+	err := json.NewDecoder(w.Body).Decode(&res)
+	assert.NoError(t, err)
+	assert.Equal(t, 2, len(res.Variants))
+	assert.Equal(t, "Small", res.Variants[0].Name)
+	assert.Equal(t, "25.99", res.Variants[0].Price)
+}
+
+// TestProductHandler_HandleGetProductDetail_VariantInheritsPrice tests variant price inheritance
+func TestProductHandler_HandleGetProductDetail_VariantInheritsPrice(t *testing.T) {
+	// Arrange
+	mockRepo := appproduct.NewMockRepository().WithFindByCode(func(ctx context.Context, code string) (*product.Product, error) {
+		prod := appproduct.GetSampleProducts()[0]
+		return &prod, nil
+	})
+	listUC := appproduct.NewListCatalogUseCase(mockRepo)
+	detailUC := appproduct.NewGetProductDetailUseCase(mockRepo)
+	handler := NewProductHandler(listUC, detailUC)
+
+	// Act
+	req := httptest.NewRequest("GET", "/catalog/PROD001", nil)
+	req.SetPathValue("code", "PROD001")
+	w := httptest.NewRecorder()
+	handler.HandleGetProductDetail(w, req)
+
+	// Assert
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	var res appproduct.DetailResponse
+	err := json.NewDecoder(w.Body).Decode(&res)
+	assert.NoError(t, err)
+	// Variant at index 1 should inherit product price
+	assert.Equal(t, "Large", res.Variants[1].Name)
+	assert.Equal(t, "29.99", res.Variants[1].Price)
+}
+
+// TestProductHandler_HandleGetProductDetail_EmptyCode tests empty product code
+func TestProductHandler_HandleGetProductDetail_EmptyCode(t *testing.T) {
+	// Arrange
+	mockRepo := appproduct.NewMockRepository()
+	listUC := appproduct.NewListCatalogUseCase(mockRepo)
+	detailUC := appproduct.NewGetProductDetailUseCase(mockRepo)
+	handler := NewProductHandler(listUC, detailUC)
+
+	// Act
+	req := httptest.NewRequest("GET", "/catalog/", nil)
+	req.SetPathValue("code", "")
+	w := httptest.NewRecorder()
+	handler.HandleGetProductDetail(w, req)
+
+	// Assert
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+}
+
+// TestProductHandler_HandleGetProductDetail_NotFound tests product not found
+func TestProductHandler_HandleGetProductDetail_NotFound(t *testing.T) {
+	// Arrange
+	mockRepo := appproduct.NewMockRepository().WithFindByCode(func(ctx context.Context, code string) (*product.Product, error) {
+		return nil, assert.AnError
+	})
+	listUC := appproduct.NewListCatalogUseCase(mockRepo)
+	detailUC := appproduct.NewGetProductDetailUseCase(mockRepo)
+	handler := NewProductHandler(listUC, detailUC)
+
+	// Act
+	req := httptest.NewRequest("GET", "/catalog/NONEXISTENT", nil)
+	req.SetPathValue("code", "NONEXISTENT")
+	w := httptest.NewRecorder()
+	handler.HandleGetProductDetail(w, req)
+
+	// Assert
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+// TestProductHandler_HandleGetProductDetail_WithoutVariants tests product without variants
+func TestProductHandler_HandleGetProductDetail_WithoutVariants(t *testing.T) {
+	// Arrange
+	mockRepo := appproduct.NewMockRepository().WithFindByCode(func(ctx context.Context, code string) (*product.Product, error) {
+		prod := appproduct.GetSampleProducts()[2]
+		return &prod, nil
+	})
+	listUC := appproduct.NewListCatalogUseCase(mockRepo)
+	detailUC := appproduct.NewGetProductDetailUseCase(mockRepo)
+	handler := NewProductHandler(listUC, detailUC)
+
+	// Act
+	req := httptest.NewRequest("GET", "/catalog/PROD003", nil)
+	req.SetPathValue("code", "PROD003")
+	w := httptest.NewRecorder()
+	handler.HandleGetProductDetail(w, req)
+
+	// Assert
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	var res appproduct.DetailResponse
+	err := json.NewDecoder(w.Body).Decode(&res)
+	assert.NoError(t, err)
+	assert.Equal(t, "PROD003", res.Code)
+	assert.Equal(t, 0, len(res.Variants))
+}
+
+// TestProductHandler_HandleGetProductDetail_DifferentCategory tests product with different category
+func TestProductHandler_HandleGetProductDetail_DifferentCategory(t *testing.T) {
+	// Arrange
+	mockRepo := appproduct.NewMockRepository().WithFindByCode(func(ctx context.Context, code string) (*product.Product, error) {
+		prod := appproduct.GetSampleProducts()[1]
+		return &prod, nil
+	})
+	listUC := appproduct.NewListCatalogUseCase(mockRepo)
+	detailUC := appproduct.NewGetProductDetailUseCase(mockRepo)
+	handler := NewProductHandler(listUC, detailUC)
+
+	// Act
+	req := httptest.NewRequest("GET", "/catalog/PROD002", nil)
+	req.SetPathValue("code", "PROD002")
+	w := httptest.NewRecorder()
+	handler.HandleGetProductDetail(w, req)
+
+	// Assert
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	var res appproduct.DetailResponse
+	err := json.NewDecoder(w.Body).Decode(&res)
+	assert.NoError(t, err)
+	assert.NotNil(t, res.Category)
+	assert.Equal(t, "SHOES", res.Category.Code)
+	assert.Equal(t, "Shoes", res.Category.Name)
+}
+
+// TestProductHandler_HandleGetProductDetail_IncludesAllFields tests all response fields
+func TestProductHandler_HandleGetProductDetail_IncludesAllFields(t *testing.T) {
+	// Arrange
+	mockRepo := appproduct.NewMockRepository().WithFindByCode(func(ctx context.Context, code string) (*product.Product, error) {
+		prod := appproduct.GetSampleProducts()[0]
+		return &prod, nil
+	})
+	listUC := appproduct.NewListCatalogUseCase(mockRepo)
+	detailUC := appproduct.NewGetProductDetailUseCase(mockRepo)
+	handler := NewProductHandler(listUC, detailUC)
+
+	// Act
+	req := httptest.NewRequest("GET", "/catalog/PROD001", nil)
+	req.SetPathValue("code", "PROD001")
+	w := httptest.NewRecorder()
+	handler.HandleGetProductDetail(w, req)
+
+	// Assert
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	var res appproduct.DetailResponse
+	err := json.NewDecoder(w.Body).Decode(&res)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, res.Code)
+	assert.NotEmpty(t, res.Price)
+	assert.NotNil(t, res.Category)
+	assert.NotEmpty(t, res.Category.Code)
+	assert.NotEmpty(t, res.Category.Name)
+}

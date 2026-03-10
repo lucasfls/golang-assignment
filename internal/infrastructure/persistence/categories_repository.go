@@ -37,3 +37,18 @@ func (r *CategoriesRepository) FindAll(ctx context.Context) ([]category.Category
 
 	return domainCategories, nil
 }
+
+// Create creates a new category.
+// Returns the created category or an error.
+func (r *CategoriesRepository) Create(ctx context.Context, code, name string) (*category.Category, error) {
+	persistenceCategory := Category{
+		Code: code,
+		Name: name,
+	}
+
+	if err := r.db.WithContext(ctx).Create(&persistenceCategory).Error; err != nil {
+		return nil, err
+	}
+
+	return persistenceCategory.ToDomainCategory(), nil
+}

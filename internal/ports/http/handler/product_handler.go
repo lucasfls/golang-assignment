@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 
 	appproduct "github.com/mytheresa/go-hiring-challenge/internal/application/product"
+	httputil "github.com/mytheresa/go-hiring-challenge/internal/ports/http"
 )
 
 // ProductHandler handles HTTP requests for product operations.
@@ -67,13 +67,12 @@ func (h *ProductHandler) HandleListCatalog(w http.ResponseWriter, r *http.Reques
 	// Execute use case with filters
 	res, err := h.listCatalogUC.Execute(r.Context(), offset, limit, filter.ToFilterOptions()...)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		httputil.WriteError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	// Return JSON response
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(res)
+	httputil.WriteSuccess(w, res)
 }
 
 // HandleGetProductDetail handles GET /catalog/:code requests.
@@ -83,18 +82,17 @@ func (h *ProductHandler) HandleGetProductDetail(w http.ResponseWriter, r *http.R
 	// Go 1.22+ supports path patterns like "GET /catalog/{code}"
 	code := r.PathValue("code")
 	if code == "" {
-		http.Error(w, "product code is required", http.StatusBadRequest)
+		httputil.WriteError(w, http.StatusBadRequest, "product code is required")
 		return
 	}
 
 	// Execute use case
 	res, err := h.getProductDetailUC.Execute(r.Context(), code)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		httputil.WriteError(w, http.StatusNotFound, err.Error())
 		return
 	}
 
 	// Return JSON response
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(res)
+	httputil.WriteSuccess(w, res)
 }

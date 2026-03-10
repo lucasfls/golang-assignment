@@ -7,4 +7,7 @@ import "context"
 type Repository interface {
 	// FindAll returns all categories.
 	FindAll(ctx context.Context) ([]Category, error)
+
+	// Create creates a new category.
+	Create(ctx context.Context, code, name string) (*Category, error)
 }
