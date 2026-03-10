@@ -21,7 +21,8 @@ func TestProductHandler_HandleListCatalog_DefaultPagination(t *testing.T) {
 		return appproduct.GetSampleProducts(), 3, nil
 	})
 	uc := appproduct.NewListCatalogUseCase(mockRepo)
-	handler := NewProductHandler(uc)
+	detailUC := appproduct.NewGetProductDetailUseCase(mockRepo)
+	handler := NewProductHandler(uc, detailUC)
 
 	// Act
 	req := httptest.NewRequest("GET", "/catalog", nil)
@@ -46,7 +47,8 @@ func TestProductHandler_HandleListCatalog_WithOffset(t *testing.T) {
 		return appproduct.GetSampleProducts(), 3, nil
 	})
 	uc := appproduct.NewListCatalogUseCase(mockRepo)
-	handler := NewProductHandler(uc)
+	detailUC := appproduct.NewGetProductDetailUseCase(mockRepo)
+	handler := NewProductHandler(uc, detailUC)
 
 	// Act
 	req := httptest.NewRequest("GET", "/catalog?offset=2", nil)
@@ -70,7 +72,8 @@ func TestProductHandler_HandleListCatalog_WithLimit(t *testing.T) {
 		return appproduct.GetSampleProducts(), 3, nil
 	})
 	uc := appproduct.NewListCatalogUseCase(mockRepo)
-	handler := NewProductHandler(uc)
+	detailUC := appproduct.NewGetProductDetailUseCase(mockRepo)
+	handler := NewProductHandler(uc, detailUC)
 
 	// Act
 	req := httptest.NewRequest("GET", "/catalog?limit=5", nil)
@@ -94,7 +97,8 @@ func TestProductHandler_HandleListCatalog_LimitCapAt100(t *testing.T) {
 		return appproduct.GetSampleProducts(), 3, nil
 	})
 	uc := appproduct.NewListCatalogUseCase(mockRepo)
-	handler := NewProductHandler(uc)
+	detailUC := appproduct.NewGetProductDetailUseCase(mockRepo)
+	handler := NewProductHandler(uc, detailUC)
 
 	// Act
 	req := httptest.NewRequest("GET", "/catalog?limit=200", nil)
@@ -115,7 +119,8 @@ func TestProductHandler_HandleListCatalog_LimitMinimum1(t *testing.T) {
 		return appproduct.GetSampleProducts(), 3, nil
 	})
 	uc := appproduct.NewListCatalogUseCase(mockRepo)
-	handler := NewProductHandler(uc)
+	detailUC := appproduct.NewGetProductDetailUseCase(mockRepo)
+	handler := NewProductHandler(uc, detailUC)
 
 	// Act - request with invalid limit
 	req := httptest.NewRequest("GET", "/catalog?limit=0", nil)
@@ -135,7 +140,8 @@ func TestProductHandler_HandleListCatalog_NegativeOffsetTreatedAsZero(t *testing
 		return appproduct.GetSampleProducts(), 3, nil
 	})
 	uc := appproduct.NewListCatalogUseCase(mockRepo)
-	handler := NewProductHandler(uc)
+	detailUC := appproduct.NewGetProductDetailUseCase(mockRepo)
+	handler := NewProductHandler(uc, detailUC)
 
 	// Act
 	req := httptest.NewRequest("GET", "/catalog?offset=-5", nil)
@@ -155,7 +161,8 @@ func TestProductHandler_HandleListCatalog_InvalidOffsetIgnored(t *testing.T) {
 		return appproduct.GetSampleProducts(), 3, nil
 	})
 	uc := appproduct.NewListCatalogUseCase(mockRepo)
-	handler := NewProductHandler(uc)
+	detailUC := appproduct.NewGetProductDetailUseCase(mockRepo)
+	handler := NewProductHandler(uc, detailUC)
 
 	// Act
 	req := httptest.NewRequest("GET", "/catalog?offset=invalid", nil)
@@ -175,7 +182,8 @@ func TestProductHandler_HandleListCatalog_OffsetAndLimitTogether(t *testing.T) {
 		return appproduct.GetSampleProducts(), 100, nil
 	})
 	uc := appproduct.NewListCatalogUseCase(mockRepo)
-	handler := NewProductHandler(uc)
+	detailUC := appproduct.NewGetProductDetailUseCase(mockRepo)
+	handler := NewProductHandler(uc, detailUC)
 
 	// Act
 	req := httptest.NewRequest("GET", "/catalog?offset=5&limit=25", nil)

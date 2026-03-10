@@ -25,7 +25,8 @@ func TestProductHandler_HandleListCatalog_FilterByCategory(t *testing.T) {
 		return clothingProducts, 1, nil
 	})
 	uc := appproduct.NewListCatalogUseCase(mockRepo)
-	handler := NewProductHandler(uc)
+	detailUC := appproduct.NewGetProductDetailUseCase(mockRepo)
+	handler := NewProductHandler(uc, detailUC)
 
 	// Act
 	req := httptest.NewRequest("GET", "/catalog?category=CLOTHING", nil)
@@ -56,7 +57,8 @@ func TestProductHandler_HandleListCatalog_FilterByMaxPrice(t *testing.T) {
 		return cheapProducts, 1, nil
 	})
 	uc := appproduct.NewListCatalogUseCase(mockRepo)
-	handler := NewProductHandler(uc)
+	detailUC := appproduct.NewGetProductDetailUseCase(mockRepo)
+	handler := NewProductHandler(uc, detailUC)
 
 	// Act
 	req := httptest.NewRequest("GET", "/catalog?maxPrice=20.00", nil)
@@ -84,7 +86,8 @@ func TestProductHandler_HandleListCatalog_FilterByCategoryAndPrice(t *testing.T)
 		return []product.Product{appproduct.GetSampleProducts()[1]}, 1, nil
 	})
 	uc := appproduct.NewListCatalogUseCase(mockRepo)
-	handler := NewProductHandler(uc)
+	detailUC := appproduct.NewGetProductDetailUseCase(mockRepo)
+	handler := NewProductHandler(uc, detailUC)
 
 	// Act
 	req := httptest.NewRequest("GET", "/catalog?category=SHOES&maxPrice=100.00", nil)
@@ -112,7 +115,8 @@ func TestProductHandler_HandleListCatalog_FilterWithPagination(t *testing.T) {
 		return appproduct.GetSampleProducts()[1:], 3, nil
 	})
 	uc := appproduct.NewListCatalogUseCase(mockRepo)
-	handler := NewProductHandler(uc)
+	detailUC := appproduct.NewGetProductDetailUseCase(mockRepo)
+	handler := NewProductHandler(uc, detailUC)
 
 	// Act
 	req := httptest.NewRequest("GET", "/catalog?category=CLOTHING&offset=1&limit=5", nil)
@@ -138,7 +142,8 @@ func TestProductHandler_HandleListCatalog_InvalidMaxPrice(t *testing.T) {
 		return appproduct.GetSampleProducts(), 3, nil
 	})
 	uc := appproduct.NewListCatalogUseCase(mockRepo)
-	handler := NewProductHandler(uc)
+	detailUC := appproduct.NewGetProductDetailUseCase(mockRepo)
+	handler := NewProductHandler(uc, detailUC)
 
 	// Act
 	req := httptest.NewRequest("GET", "/catalog?maxPrice=invalid", nil)
@@ -165,7 +170,8 @@ func TestProductHandler_HandleListCatalog_EmptyFilters(t *testing.T) {
 		return appproduct.GetSampleProducts(), 3, nil
 	})
 	uc := appproduct.NewListCatalogUseCase(mockRepo)
-	handler := NewProductHandler(uc)
+	detailUC := appproduct.NewGetProductDetailUseCase(mockRepo)
+	handler := NewProductHandler(uc, detailUC)
 
 	// Act
 	req := httptest.NewRequest("GET", "/catalog", nil)
