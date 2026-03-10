@@ -10,9 +10,9 @@ import (
 	"syscall"
 
 	"github.com/joho/godotenv"
-	"github.com/mytheresa/go-hiring-challenge/app/catalog"
-	"github.com/mytheresa/go-hiring-challenge/app/database"
-	"github.com/mytheresa/go-hiring-challenge/models"
+	appproduct "github.com/mytheresa/go-hiring-challenge/internal/application/product"
+	"github.com/mytheresa/go-hiring-challenge/internal/infrastructure/persistence"
+	"github.com/mytheresa/go-hiring-challenge/internal/ports/http/handler"
 )
 
 func main() {
@@ -26,7 +26,7 @@ func main() {
 	defer stop()
 
 	// Initialize database connection
-	db, close := database.New(
+	db, close := persistence.New(
 		os.Getenv("POSTGRES_USER"),
 		os.Getenv("POSTGRES_PASSWORD"),
 		os.Getenv("POSTGRES_DB"),
@@ -34,13 +34,18 @@ func main() {
 	)
 	defer close()
 
-	// Initialize handlers
-	prodRepo := models.NewProductsRepository(db)
-	cat := catalog.NewCatalogHandler(prodRepo)
+	// Initialize repositories
+	productRepo := persistence.NewProductsRepository(db)
+
+	// Initialize application use cases
+	listCatalogUC := appproduct.NewListCatalogUseCase(productRepo, nil)
+
+	// Initialize HTTP handlers (ports)
+	productHandler := handler.NewProductHandler(listCatalogUC)
 
 	// Set up routing
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /catalog", cat.HandleGet)
+	mux.HandleFunc("GET /catalog", productHandler.HandleListCatalog)
 
 	// Set up the HTTP server
 	srv := &http.Server{
