@@ -39,13 +39,15 @@ func main() {
 
 	// Initialize application use cases
 	listCatalogUC := appproduct.NewListCatalogUseCase(productRepo)
+	getProductDetailUC := appproduct.NewGetProductDetailUseCase(productRepo)
 
 	// Initialize HTTP handlers (ports)
-	productHandler := handler.NewProductHandler(listCatalogUC)
+	productHandler := handler.NewProductHandler(listCatalogUC, getProductDetailUC)
 
 	// Set up routing
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /catalog", productHandler.HandleListCatalog)
+	mux.HandleFunc("GET /catalog/{code}", productHandler.HandleGetProductDetail)
 
 	// Set up the HTTP server
 	srv := &http.Server{

@@ -60,3 +60,20 @@ func (r *ProductsRepository) FindAll(ctx context.Context, offset, limit int, fil
 
 	return domainProducts, total, nil
 }
+
+// FindByCode retrieves a product by its code.
+// Returns the product or an error if not found.
+func (r *ProductsRepository) FindByCode(ctx context.Context, code string) (*product.Product, error) {
+	var persistenceProduct Product
+
+	if err := r.db.WithContext(ctx).
+		Where("code = ?", code).
+		Preload("Category").
+		Preload("Variants").
+		First(&persistenceProduct).Error; err != nil {
+		return nil, err
+	}
+
+	domainProduct := persistenceProduct.ToDomainProduct()
+	return domainProduct, nil
+}

@@ -10,13 +10,15 @@ import (
 
 // ProductHandler handles HTTP requests for product operations.
 type ProductHandler struct {
-	listCatalogUC *appproduct.ListCatalogUseCase
+	listCatalogUC      *appproduct.ListCatalogUseCase
+	getProductDetailUC *appproduct.GetProductDetailUseCase
 }
 
 // NewProductHandler creates a new instance of ProductHandler.
-func NewProductHandler(listCatalogUC *appproduct.ListCatalogUseCase) *ProductHandler {
+func NewProductHandler(listCatalogUC *appproduct.ListCatalogUseCase, getProductDetailUC *appproduct.GetProductDetailUseCase) *ProductHandler {
 	return &ProductHandler{
-		listCatalogUC: listCatalogUC,
+		listCatalogUC:      listCatalogUC,
+		getProductDetailUC: getProductDetailUC,
 	}
 }
 
@@ -66,6 +68,29 @@ func (h *ProductHandler) HandleListCatalog(w http.ResponseWriter, r *http.Reques
 	res, err := h.listCatalogUC.Execute(r.Context(), offset, limit, filter.ToFilterOptions()...)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Return JSON response
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(res)
+}
+
+// HandleGetProductDetail handles GET /catalog/:code requests.
+// Returns product details including variants and category.
+func (h *ProductHandler) HandleGetProductDetail(w http.ResponseWriter, r *http.Request) {
+	// Extract product code from URL path parameter
+	// Go 1.22+ supports path patterns like "GET /catalog/{code}"
+	code := r.PathValue("code")
+	if code == "" {
+		http.Error(w, "product code is required", http.StatusBadRequest)
+		return
+	}
+
+	// Execute use case
+	res, err := h.getProductDetailUC.Execute(r.Context(), code)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 

@@ -18,4 +18,8 @@ type Repository interface {
 	// FindAll returns all products with pagination and optional filters.
 	// Returns slice of products, total count, and error.
 	FindAll(ctx context.Context, offset, limit int, filters ...FindAllFilter) ([]Product, int64, error)
+
+	// FindByCode returns a product by its code.
+	// Returns the product or an error if not found.
+	FindByCode(ctx context.Context, code string) (*Product, error)
 }
