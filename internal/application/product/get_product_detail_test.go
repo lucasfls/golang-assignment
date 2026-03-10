@@ -15,7 +15,7 @@ func TestGetProductDetailUseCase_Execute(t *testing.T) {
 		prod := GetSampleProducts()[0]
 		return &prod, nil
 	})
-	uc := NewGetProductDetailUseCase(mockRepo)
+	uc := NewGetProductDetail(mockRepo)
 
 	// Act
 	res, err := uc.Execute(context.Background(), "PROD001")
@@ -36,7 +36,7 @@ func TestGetProductDetailUseCase_Execute_WithVariants(t *testing.T) {
 		prod := GetSampleProducts()[0]
 		return &prod, nil
 	})
-	uc := NewGetProductDetailUseCase(mockRepo)
+	uc := NewGetProductDetail(mockRepo)
 
 	// Act
 	res, err := uc.Execute(context.Background(), "PROD001")
@@ -55,7 +55,7 @@ func TestGetProductDetailUseCase_Execute_VariantInheritsProductPrice(t *testing.
 		prod := GetSampleProducts()[0]
 		return &prod, nil
 	})
-	uc := NewGetProductDetailUseCase(mockRepo)
+	uc := NewGetProductDetail(mockRepo)
 
 	// Act
 	res, err := uc.Execute(context.Background(), "PROD001")
@@ -70,7 +70,7 @@ func TestGetProductDetailUseCase_Execute_VariantInheritsProductPrice(t *testing.
 func TestGetProductDetailUseCase_Execute_EmptyCode(t *testing.T) {
 	// Arrange
 	mockRepo := NewMockRepository()
-	uc := NewGetProductDetailUseCase(mockRepo)
+	uc := NewGetProductDetail(mockRepo)
 
 	// Act
 	res, err := uc.Execute(context.Background(), "")
@@ -86,7 +86,7 @@ func TestGetProductDetailUseCase_Execute_ProductNotFound(t *testing.T) {
 	mockRepo := NewMockRepository().WithFindByCode(func(ctx context.Context, code string) (*product.Product, error) {
 		return nil, assert.AnError
 	})
-	uc := NewGetProductDetailUseCase(mockRepo)
+	uc := NewGetProductDetail(mockRepo)
 
 	// Act
 	res, err := uc.Execute(context.Background(), "NONEXISTENT")
@@ -102,7 +102,7 @@ func TestGetProductDetailUseCase_Execute_WithoutVariants(t *testing.T) {
 		prod := GetSampleProducts()[2]
 		return &prod, nil
 	})
-	uc := NewGetProductDetailUseCase(mockRepo)
+	uc := NewGetProductDetail(mockRepo)
 
 	// Act
 	res, err := uc.Execute(context.Background(), "PROD003")
@@ -119,7 +119,7 @@ func TestGetProductDetailUseCase_Execute_WithDifferentCategory(t *testing.T) {
 		prod := GetSampleProducts()[1]
 		return &prod, nil
 	})
-	uc := NewGetProductDetailUseCase(mockRepo)
+	uc := NewGetProductDetail(mockRepo)
 
 	// Act
 	res, err := uc.Execute(context.Background(), "PROD002")
@@ -163,7 +163,7 @@ func TestGetProductDetailUseCase_Execute_AllVariantsHavePrices(t *testing.T) {
 		}
 		return prod, nil
 	})
-	uc := NewGetProductDetailUseCase(mockRepo)
+	uc := NewGetProductDetail(mockRepo)
 
 	// Act
 	res, err := uc.Execute(context.Background(), "PROD001")

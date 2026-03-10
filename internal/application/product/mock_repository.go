@@ -10,14 +10,13 @@ import (
 
 // MockRepository is a mock implementation of product.Repository for testing.
 type MockRepository struct {
-	FindAllFunc    func(ctx context.Context, offset, limit int, filters ...product.FindAllFilter) ([]product.Product, int64, error)
+	FindAllFunc    func(ctx context.Context, offset, limit int, filter product.FindAllFilter) ([]product.Product, int64, error)
 	FindByCodeFunc func(ctx context.Context, code string) (*product.Product, error)
 }
 
-// NewMockRepository creates a new MockRepository with default behavior.
 func NewMockRepository() *MockRepository {
 	return &MockRepository{
-		FindAllFunc: func(ctx context.Context, offset, limit int, filters ...product.FindAllFilter) ([]product.Product, int64, error) {
+		FindAllFunc: func(ctx context.Context, offset, limit int, filter product.FindAllFilter) ([]product.Product, int64, error) {
 			return []product.Product{}, 0, nil
 		},
 		FindByCodeFunc: func(ctx context.Context, code string) (*product.Product, error) {
@@ -26,18 +25,15 @@ func NewMockRepository() *MockRepository {
 	}
 }
 
-// FindAll delegates to the mocked function.
-func (m *MockRepository) FindAll(ctx context.Context, offset, limit int, filters ...product.FindAllFilter) ([]product.Product, int64, error) {
-	return m.FindAllFunc(ctx, offset, limit, filters...)
+func (m *MockRepository) FindAll(ctx context.Context, offset, limit int, filter product.FindAllFilter) ([]product.Product, int64, error) {
+	return m.FindAllFunc(ctx, offset, limit, filter)
 }
 
-// FindByCode delegates to the mocked function.
 func (m *MockRepository) FindByCode(ctx context.Context, code string) (*product.Product, error) {
 	return m.FindByCodeFunc(ctx, code)
 }
 
-// WithFindAll sets the behavior for FindAll method.
-func (m *MockRepository) WithFindAll(fn func(ctx context.Context, offset, limit int, filters ...product.FindAllFilter) ([]product.Product, int64, error)) *MockRepository {
+func (m *MockRepository) WithFindAll(fn func(ctx context.Context, offset, limit int, filter product.FindAllFilter) ([]product.Product, int64, error)) *MockRepository {
 	m.FindAllFunc = fn
 	return m
 }

@@ -1,22 +1,23 @@
 package category
 
-// Category represents a product category.
-// Categories are used to organize and filter products in the catalog.
+import "fmt"
+
 type Category struct {
 	ID   uint   `json:"id"`
 	Code string `json:"code"`
 	Name string `json:"name"`
 }
 
-// NewCategory creates a new Category.
-func NewCategory(code, name string) *Category {
+func New(code, name string) (*Category, error) {
+	if code == "" {
+		return nil, fmt.Errorf("category code cannot be empty")
+	}
+	if name == "" {
+		return nil, fmt.Errorf("category name cannot be empty")
+	}
+
 	return &Category{
 		Code: code,
 		Name: name,
-	}
-}
-
-// IsValid checks if the category has required fields.
-func (c *Category) IsValid() bool {
-	return c.Code != "" && c.Name != ""
+	}, nil
 }

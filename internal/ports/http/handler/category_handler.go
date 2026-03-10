@@ -5,55 +5,50 @@ import (
 	"net/http"
 
 	appcategory "github.com/mytheresa/go-hiring-challenge/internal/application/category"
-	httputil "github.com/mytheresa/go-hiring-challenge/internal/ports/http"
 )
 
-// CategoryHandler handles HTTP requests for category operations.
 type CategoryHandler struct {
-	listCategoriesUC *appcategory.ListCategoriesUseCase
-	createCategoryUC *appcategory.CreateCategoryUseCase
+	list   *appcategory.ListCategories
+	create *appcategory.CreateCategory
 }
 
-// NewCategoryHandler creates a new instance of CategoryHandler.
-func NewCategoryHandler(listCategoriesUC *appcategory.ListCategoriesUseCase, createCategoryUC *appcategory.CreateCategoryUseCase) *CategoryHandler {
+func NewCategoryHandler(list *appcategory.ListCategories, create *appcategory.CreateCategory) *CategoryHandler {
 	return &CategoryHandler{
-		listCategoriesUC: listCategoriesUC,
-		createCategoryUC: createCategoryUC,
+		list:   list,
+		create: create,
 	}
 }
 
-// HandleListCategories handles GET /categories requests.
-// Returns a list of all categories.
 func (h *CategoryHandler) HandleListCategories(w http.ResponseWriter, r *http.Request) {
-	categories, err := h.listCategoriesUC.Execute(r.Context())
+	categories, err := h.list.Execute(r.Context())
 	if err != nil {
-		httputil.WriteError(w, http.StatusInternalServerError, err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	httputil.WriteSuccess(w, categories)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(categories)
 }
 
-// CreateCategoryRequest represents the request body for creating a category.
 type CreateCategoryRequest struct {
 	Code string `json:"code"`
 	Name string `json:"name"`
 }
 
-// HandleCreateCategory handles POST /categories requests.
-// Accepts a JSON body with category details and creates a new category.
 func (h *CategoryHandler) HandleCreateCategory(w http.ResponseWriter, r *http.Request) {
 	var req CreateCategoryRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		httputil.WriteError(w, http.StatusBadRequest, "invalid request body")
+		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	category, err := h.createCategoryUC.Execute(r.Context(), req.Code, req.Name)
+	category, err := h.create.Execute(r.Context(), req.Code, req.Name)
 	if err != nil {
-		httputil.WriteError(w, http.StatusBadRequest, err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	httputil.WriteCreated(w, category)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(category)
 }

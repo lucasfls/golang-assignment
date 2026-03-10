@@ -4,15 +4,19 @@ This repository contains a Go application for managing products and their prices
 
 ## Project Structure
 
-1. **cmd/**: Contains the main application and seed command entry points.
+```
+cmd/
+├── server/     # API server
+└── seed/       # Database seeding
 
-   - `server/main.go`: The main application entry point, serves the REST API.
-   - `seed/main.go`: Command to seed the database with initial product data.
+internal/
+├── domain/           # Business entities
+├── application/      # Service logic
+├── infrastructure/   # Database repositories
+└── ports/           # HTTP handlers
 
-2. **app/**: Contains the application logic.
-3. **sql/**: Contains a very simple database migration scripts setup.
-4. **models/**: Contains the data models and repositories used in the application.
-5. `.env`: Environment variables file for configuration.
+sql/              # Database migrations
+```
 
 ## Setup Code Repository
 

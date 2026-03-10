@@ -9,7 +9,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// New creates a new database connection and returns the GORM instance and a close function.
 func New(user, password, dbname, port string) (db *gorm.DB, close func() error) {
 	dsn := fmt.Sprintf("postgres://%s:%s@localhost:%s/%s?sslmode=disable", user, password, port, dbname)
 
@@ -20,7 +19,7 @@ func New(user, password, dbname, port string) (db *gorm.DB, close func() error) 
 
 	sqlDB, err := db.DB()
 	if err != nil {
-		log.Fatalf("Failed to get database connection: %s", err)
+		log.Fatalf("failed to get database connection: %s", err)
 	}
 
 	return db, sqlDB.Close

@@ -40,14 +40,14 @@ func main() {
 	categoryRepo := persistence.NewCategoriesRepository(db)
 
 	// Initialize application use cases
-	listCatalogUC := appproduct.NewListCatalogUseCase(productRepo)
-	getProductDetailUC := appproduct.NewGetProductDetailUseCase(productRepo)
-	listCategoriesUC := appcategory.NewListCategoriesUseCase(categoryRepo)
-	createCategoryUC := appcategory.NewCreateCategoryUseCase(categoryRepo)
+	listCatalog := appproduct.NewListCatalog(productRepo)
+	getProductDetail := appproduct.NewGetProductDetail(productRepo)
+	listCategories := appcategory.NewListCategories(categoryRepo)
+	createCategory := appcategory.NewCreateCategory(categoryRepo)
 
 	// Initialize HTTP handlers (ports)
-	productHandler := handler.NewProductHandler(listCatalogUC, getProductDetailUC)
-	categoryHandler := handler.NewCategoryHandler(listCategoriesUC, createCategoryUC)
+	productHandler := handler.NewProductHandler(listCatalog, getProductDetail)
+	categoryHandler := handler.NewCategoryHandler(listCategories, createCategory)
 
 	// Set up routing
 	mux := http.NewServeMux()
