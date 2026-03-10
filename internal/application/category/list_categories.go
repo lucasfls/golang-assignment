@@ -14,6 +14,6 @@ func NewListCategories(repo category.Repository) *ListCategories {
 	return &ListCategories{repo: repo}
 }
 
-func (uc *ListCategories) Execute(ctx context.Context) ([]category.Category, error) {
-	return uc.repo.FindAll(ctx)
+func (lc *ListCategories) List(ctx context.Context) ([]category.Category, error) {
+	return lc.repo.FindAll(ctx)
 }

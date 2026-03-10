@@ -18,7 +18,7 @@ func TestGetProductDetailUseCase_Execute(t *testing.T) {
 	uc := NewGetProductDetail(mockRepo)
 
 	// Act
-	res, err := uc.Execute(context.Background(), "PROD001")
+	res, err := uc.Get(context.Background(), "PROD001")
 
 	// Assert
 	assert.NoError(t, err)
@@ -39,7 +39,7 @@ func TestGetProductDetailUseCase_Execute_WithVariants(t *testing.T) {
 	uc := NewGetProductDetail(mockRepo)
 
 	// Act
-	res, err := uc.Execute(context.Background(), "PROD001")
+	res, err := uc.Get(context.Background(), "PROD001")
 
 	// Assert
 	assert.NoError(t, err)
@@ -58,7 +58,7 @@ func TestGetProductDetailUseCase_Execute_VariantInheritsProductPrice(t *testing.
 	uc := NewGetProductDetail(mockRepo)
 
 	// Act
-	res, err := uc.Execute(context.Background(), "PROD001")
+	res, err := uc.Get(context.Background(), "PROD001")
 
 	// Assert
 	assert.NoError(t, err)
@@ -73,7 +73,7 @@ func TestGetProductDetailUseCase_Execute_EmptyCode(t *testing.T) {
 	uc := NewGetProductDetail(mockRepo)
 
 	// Act
-	res, err := uc.Execute(context.Background(), "")
+	res, err := uc.Get(context.Background(), "")
 
 	// Assert
 	assert.Error(t, err)
@@ -89,7 +89,7 @@ func TestGetProductDetailUseCase_Execute_ProductNotFound(t *testing.T) {
 	uc := NewGetProductDetail(mockRepo)
 
 	// Act
-	res, err := uc.Execute(context.Background(), "NONEXISTENT")
+	res, err := uc.Get(context.Background(), "NONEXISTENT")
 
 	// Assert
 	assert.Error(t, err)
@@ -105,7 +105,7 @@ func TestGetProductDetailUseCase_Execute_WithoutVariants(t *testing.T) {
 	uc := NewGetProductDetail(mockRepo)
 
 	// Act
-	res, err := uc.Execute(context.Background(), "PROD003")
+	res, err := uc.Get(context.Background(), "PROD003")
 
 	// Assert
 	assert.NoError(t, err)
@@ -122,7 +122,7 @@ func TestGetProductDetailUseCase_Execute_WithDifferentCategory(t *testing.T) {
 	uc := NewGetProductDetail(mockRepo)
 
 	// Act
-	res, err := uc.Execute(context.Background(), "PROD002")
+	res, err := uc.Get(context.Background(), "PROD002")
 
 	// Assert
 	assert.NoError(t, err)
@@ -166,7 +166,7 @@ func TestGetProductDetailUseCase_Execute_AllVariantsHavePrices(t *testing.T) {
 	uc := NewGetProductDetail(mockRepo)
 
 	// Act
-	res, err := uc.Execute(context.Background(), "PROD001")
+	res, err := uc.Get(context.Background(), "PROD001")
 
 	// Assert
 	assert.NoError(t, err)

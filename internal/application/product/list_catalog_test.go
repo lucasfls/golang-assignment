@@ -15,7 +15,7 @@ func TestListCatalogUseCase_Execute(t *testing.T) {
 
 	uc := NewListCatalog(mockRepo)
 
-	res, err := uc.Execute(context.Background(), 0, 10, product.FindAllFilter{})
+	res, err := uc.List(context.Background(), 0, 10, product.FindAllFilter{})
 
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
@@ -34,7 +34,7 @@ func TestListCatalogUseCase_Execute_WithVariants(t *testing.T) {
 
 	uc := NewListCatalog(mockRepo)
 
-	res, err := uc.Execute(context.Background(), 0, 10, product.FindAllFilter{})
+	res, err := uc.List(context.Background(), 0, 10, product.FindAllFilter{})
 
 	assert.NoError(t, err)
 	assert.Equal(t, 2, len(res.Products[0].Variants))
@@ -53,7 +53,7 @@ func TestListCatalogUseCase_Execute_WithOffset(t *testing.T) {
 
 	uc := NewListCatalog(mockRepo)
 
-	res, err := uc.Execute(context.Background(), 1, 10, product.FindAllFilter{})
+	res, err := uc.List(context.Background(), 1, 10, product.FindAllFilter{})
 
 	assert.NoError(t, err)
 	assert.Equal(t, 2, len(res.Products))
@@ -71,7 +71,7 @@ func TestListCatalogUseCase_Execute_WithCustomLimit(t *testing.T) {
 
 	uc := NewListCatalog(mockRepo)
 
-	res, err := uc.Execute(context.Background(), 0, 2, product.FindAllFilter{})
+	res, err := uc.List(context.Background(), 0, 2, product.FindAllFilter{})
 
 	assert.NoError(t, err)
 	assert.Equal(t, 2, len(res.Products))
@@ -85,7 +85,7 @@ func TestListCatalogUseCase_Execute_WithMaxLimit(t *testing.T) {
 
 	uc := NewListCatalog(mockRepo)
 
-	res, err := uc.Execute(context.Background(), 0, 100, product.FindAllFilter{})
+	res, err := uc.List(context.Background(), 0, 100, product.FindAllFilter{})
 
 	assert.NoError(t, err)
 	assert.NotNil(t, res)

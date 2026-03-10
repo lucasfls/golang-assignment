@@ -7,6 +7,7 @@ import (
 
 	appproduct "github.com/mytheresa/go-hiring-challenge/internal/application/product"
 	"github.com/mytheresa/go-hiring-challenge/internal/domain/product"
+	"github.com/shopspring/decimal"
 )
 
 type ProductHandler struct {
@@ -37,12 +38,12 @@ func (h *ProductHandler) HandleListCatalog(w http.ResponseWriter, r *http.Reques
 	}
 
 	if maxPriceStr := r.URL.Query().Get("maxPrice"); maxPriceStr != "" {
-		if price, err := appproduct.ParsePrice(maxPriceStr); err == nil {
+		if price, err := decimal.NewFromString(maxPriceStr); err == nil {
 			filter.MaxPrice = price
 		}
 	}
 
-	res, err := h.listCatalog.Execute(r.Context(), offset, limit, filter)
+	res, err := h.listCatalog.List(r.Context(), offset, limit, filter)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -68,7 +69,7 @@ func (h *ProductHandler) HandleGetProductDetail(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	res, err := h.getDetail.Execute(r.Context(), code)
+	res, err := h.getDetail.Get(r.Context(), code)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return

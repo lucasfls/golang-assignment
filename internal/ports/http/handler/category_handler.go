@@ -20,7 +20,7 @@ func NewCategoryHandler(list *appcategory.ListCategories, create *appcategory.Cr
 }
 
 func (h *CategoryHandler) HandleListCategories(w http.ResponseWriter, r *http.Request) {
-	categories, err := h.list.Execute(r.Context())
+	categories, err := h.list.List(r.Context())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -42,7 +42,7 @@ func (h *CategoryHandler) HandleCreateCategory(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	category, err := h.create.Execute(r.Context(), req.Code, req.Name)
+	category, err := h.create.Create(r.Context(), req.Code, req.Name)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

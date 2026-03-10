@@ -33,12 +33,12 @@ type VariantResponse struct {
 	Price string `json:"price"`
 }
 
-func (uc *GetProductDetail) Execute(ctx context.Context, code string) (*DetailResponse, error) {
+func (gpd *GetProductDetail) Get(ctx context.Context, code string) (*DetailResponse, error) {
 	if code == "" {
 		return nil, fmt.Errorf("product code cannot be empty")
 	}
 
-	prod, err := uc.repo.FindByCode(ctx, code)
+	prod, err := gpd.repo.FindByCode(ctx, code)
 	if err != nil {
 		return nil, err
 	}

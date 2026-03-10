@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/mytheresa/go-hiring-challenge/internal/domain/product"
-	"github.com/shopspring/decimal"
 )
 
 type ListCatalog struct {
@@ -20,8 +19,8 @@ type Response struct {
 	Total    int64             `json:"total"`
 }
 
-func (uc *ListCatalog) Execute(ctx context.Context, offset, limit int, filter product.FindAllFilter) (*Response, error) {
-	products, total, err := uc.repo.FindAll(ctx, offset, limit, filter)
+func (lc *ListCatalog) List(ctx context.Context, offset, limit int, filter product.FindAllFilter) (*Response, error) {
+	products, total, err := lc.repo.FindAll(ctx, offset, limit, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -30,8 +29,4 @@ func (uc *ListCatalog) Execute(ctx context.Context, offset, limit int, filter pr
 		Products: products,
 		Total:    total,
 	}, nil
-}
-
-func ParsePrice(s string) (decimal.Decimal, error) {
-	return decimal.NewFromString(s)
 }
