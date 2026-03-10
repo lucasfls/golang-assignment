@@ -28,11 +28,12 @@ sql/              # Database migrations
 - Ensure you have Go installed on your machine.
 - Ensure you have Docker installed on your machine.
 - Important makefile targets:
-  - `make tidy`: will install all dependencies.
-  - `make docker-up`: will start the required infrastructure services via docker containers.
-  - `make seed`: ⚠️ Will destroy and re-create the database tables.
-  - `make test`: Will run the tests.
-  - `make run`: Will start the application.
-  - `make docker-down`: Will stop the docker containers.
+  - `make tidy`: Install all dependencies
+  - `make docker-up`: Start infrastructure services via docker
+  - `make seed`: ⚠️ Destroy and re-create database tables
+  - `make run`: Start the application
+  - `make test`: Run tests with coverage
+  - `make validate`: Run comprehensive validation (format, vet, staticcheck, tests, deps, security)
+  - `make docker-down`: Stop docker containers
 
 Follow up for the assignemnt here: [ASSIGNMENT.md](ASSIGNMENT.md)
