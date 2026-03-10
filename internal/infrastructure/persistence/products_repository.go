@@ -24,6 +24,7 @@ func (r *ProductsRepository) FindAll(ctx context.Context) ([]product.Product, er
 	var products []Product
 
 	err := r.db.WithContext(ctx).
+		Preload("Category").
 		Preload("Variants").
 		Find(&products).
 		Error

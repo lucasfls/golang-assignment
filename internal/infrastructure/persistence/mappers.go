@@ -12,12 +12,17 @@ func (p *Product) ToDomainProduct() *product.Product {
 		variants[i] = v.ToDomainVariant()
 	}
 
+	var domainCategory *category.Category
+	if p.Category.ID != 0 {
+		domainCategory = p.Category.ToDomainCategory()
+	}
+
 	return &product.Product{
-		ID:         p.ID,
-		Code:       p.Code,
-		Price:      p.Price,
-		CategoryID: p.CategoryID,
-		Variants:   variants,
+		ID:       p.ID,
+		Code:     p.Code,
+		Price:    p.Price,
+		Category: domainCategory,
+		Variants: variants,
 	}
 }
 
@@ -48,12 +53,17 @@ func FromDomainProduct(p *product.Product) *Product {
 		variants[i] = FromDomainVariant(v)
 	}
 
+	var persistenceCategory Category
+	if p.Category != nil {
+		persistenceCategory = *FromDomainCategory(p.Category)
+	}
+
 	return &Product{
-		ID:         p.ID,
-		Code:       p.Code,
-		Price:      p.Price,
-		CategoryID: p.CategoryID,
-		Variants:   variants,
+		ID:       p.ID,
+		Code:     p.Code,
+		Price:    p.Price,
+		Category: persistenceCategory,
+		Variants: variants,
 	}
 }
 

@@ -20,7 +20,14 @@ type ListCatalogResponse struct {
 type ProductDTO struct {
 	Code     string       `json:"code"`
 	Price    float64      `json:"price"`
+	Category CategoryDTO  `json:"category"`
 	Variants []VariantDTO `json:"variants"`
+}
+
+// CategoryDTO is the data transfer object for a category.
+type CategoryDTO struct {
+	Code string `json:"code"`
+	Name string `json:"name"`
 }
 
 // VariantDTO is the data transfer object for a variant.
@@ -69,9 +76,18 @@ func (uc *ListCatalogUseCase) Execute(ctx context.Context, req ListCatalogReques
 			}
 		}
 
+		categoryDTO := CategoryDTO{}
+		if p.Category != nil {
+			categoryDTO = CategoryDTO{
+				Code: p.Category.Code,
+				Name: p.Category.Name,
+			}
+		}
+
 		productDTOs[i] = ProductDTO{
 			Code:     p.Code,
 			Price:    productPrice,
+			Category: categoryDTO,
 			Variants: variants,
 		}
 	}

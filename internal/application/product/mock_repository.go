@@ -3,6 +3,7 @@ package product
 import (
 	"context"
 
+	"github.com/mytheresa/go-hiring-challenge/internal/domain/category"
 	"github.com/mytheresa/go-hiring-challenge/internal/domain/product"
 	"github.com/shopspring/decimal"
 )
@@ -34,11 +35,23 @@ func (m *MockRepository) WithFindAll(fn func(ctx context.Context) ([]product.Pro
 
 // GetSampleProducts returns sample products for testing.
 func GetSampleProducts() []product.Product {
+	clothingCategory := &category.Category{
+		ID:   1,
+		Code: "CLOTHING",
+		Name: "Clothing",
+	}
+	shoesCategory := &category.Category{
+		ID:   2,
+		Code: "SHOES",
+		Name: "Shoes",
+	}
+
 	return []product.Product{
 		{
-			ID:    1,
-			Code:  "PROD001",
-			Price: mustDecimal("29.99"),
+			ID:       1,
+			Code:     "PROD001",
+			Price:    mustDecimal("29.99"),
+			Category: clothingCategory,
 			Variants: []product.Variant{
 				{
 					ID:        1,
@@ -57,9 +70,10 @@ func GetSampleProducts() []product.Product {
 			},
 		},
 		{
-			ID:    2,
-			Code:  "PROD002",
-			Price: mustDecimal("49.99"),
+			ID:       2,
+			Code:     "PROD002",
+			Price:    mustDecimal("49.99"),
+			Category: shoesCategory,
 			Variants: []product.Variant{
 				{
 					ID:        3,
@@ -74,6 +88,7 @@ func GetSampleProducts() []product.Product {
 			ID:       3,
 			Code:     "PROD003",
 			Price:    mustDecimal("19.99"),
+			Category: clothingCategory,
 			Variants: []product.Variant{},
 		},
 	}

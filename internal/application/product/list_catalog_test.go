@@ -27,6 +27,8 @@ func TestListCatalogUseCase_Execute(t *testing.T) {
 	assert.Equal(t, uint(3), res.Total)
 	assert.Equal(t, "PROD001", res.Products[0].Code)
 	assert.Equal(t, float64(29.99), res.Products[0].Price)
+	assert.Equal(t, "CLOTHING", res.Products[0].Category.Code)
+	assert.Equal(t, "Clothing", res.Products[0].Category.Name)
 }
 
 func TestListCatalogUseCase_Execute_WithVariants(t *testing.T) {
@@ -47,4 +49,5 @@ func TestListCatalogUseCase_Execute_WithVariants(t *testing.T) {
 	assert.Equal(t, "Small", res.Products[0].Variants[0].Name)
 	assert.Equal(t, float64(25.99), res.Products[0].Variants[0].Price)
 	assert.Equal(t, float64(29.99), res.Products[0].Variants[1].Price) // Inherits product price
+	assert.Equal(t, "CLOTHING", res.Products[0].Category.Code)
 }
