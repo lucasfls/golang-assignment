@@ -3,9 +3,9 @@ package category
 // Category represents a product category.
 // Categories are used to organize and filter products in the catalog.
 type Category struct {
-	ID   uint
-	Code string
-	Name string
+	ID   uint   `json:"id"`
+	Code string `json:"code"`
+	Name string `json:"name"`
 }
 
 // NewCategory creates a new Category.

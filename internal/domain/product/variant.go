@@ -7,11 +7,11 @@ import (
 // Variant is an entity within the Product aggregate.
 // It represents different configurations or options for a product.
 type Variant struct {
-	ID        uint
-	ProductID uint
-	Name      string
-	SKU       string
-	Price     decimal.Decimal
+	ID        uint            `json:"id"`
+	ProductID uint            `json:"product_id"`
+	Name      string          `json:"name"`
+	SKU       string          `json:"sku"`
+	Price     decimal.Decimal `json:"price"`
 }
 
 // NewVariant creates a new Variant entity.

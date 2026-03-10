@@ -8,11 +8,11 @@ import (
 // Product is the aggregate root for the product bounded context.
 // It represents a product in the catalog with its variants and category.
 type Product struct {
-	ID       uint
-	Code     string
-	Price    decimal.Decimal
-	Category *category.Category
-	Variants []Variant
+	ID       uint               `json:"id"`
+	Code     string             `json:"code"`
+	Price    decimal.Decimal    `json:"price"`
+	Category *category.Category `json:"category"`
+	Variants []Variant          `json:"variants"`
 }
 
 // GetEffectivePrice returns the product price, with fallback to variant price if available.

@@ -19,25 +19,32 @@ func NewProductsRepository(db *gorm.DB) *ProductsRepository {
 	}
 }
 
-// FindAll retrieves all products with their variants.
-func (r *ProductsRepository) FindAll(ctx context.Context) ([]product.Product, error) {
-	var products []Product
+// FindAll retrieves all products with pagination support.
+// Returns slice of products, total count, and error.
+func (r *ProductsRepository) FindAll(ctx context.Context, offset, limit int) ([]product.Product, int64, error) {
+	var persistenceProducts []Product
+	var total int64
 
-	err := r.db.WithContext(ctx).
-		Preload("Category").
-		Preload("Variants").
-		Find(&products).
-		Error
-
-	if err != nil {
-		return nil, err
+	// Get total count
+	if err := r.db.WithContext(ctx).Model(&Product{}).Count(&total).Error; err != nil {
+		return nil, 0, err
 	}
 
-	// Convert persistence models to domain models
-	domainProducts := make([]product.Product, len(products))
-	for i, p := range products {
+	// Get paginated results
+	if err := r.db.WithContext(ctx).
+		Offset(offset).
+		Limit(limit).
+		Preload("Category").
+		Preload("Variants").
+		Find(&persistenceProducts).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// Convert to domain models
+	domainProducts := make([]product.Product, len(persistenceProducts))
+	for i, p := range persistenceProducts {
 		domainProducts[i] = *p.ToDomainProduct()
 	}
 
-	return domainProducts, nil
+	return domainProducts, total, nil
 }

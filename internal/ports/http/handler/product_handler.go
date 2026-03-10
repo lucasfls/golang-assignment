@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	appproduct "github.com/mytheresa/go-hiring-challenge/internal/application/product"
 )
@@ -20,11 +21,35 @@ func NewProductHandler(listCatalogUC *appproduct.ListCatalogUseCase) *ProductHan
 }
 
 // HandleListCatalog handles GET /catalog requests.
+// Query parameters:
+//   - offset: starting position (default 0)
+//   - limit: number of items to return (default 10, max 100, min 1)
 func (h *ProductHandler) HandleListCatalog(w http.ResponseWriter, r *http.Request) {
-	// Execute use case
-	req := appproduct.ListCatalogRequest{}
+	// Parse and validate pagination parameters
+	offset := 0
+	if o := r.URL.Query().Get("offset"); o != "" {
+		if val, err := strconv.Atoi(o); err == nil && val >= 0 {
+			offset = val
+		}
+	}
 
-	res, err := h.listCatalogUC.Execute(r.Context(), req)
+	limit := 10 // default
+	if l := r.URL.Query().Get("limit"); l != "" {
+		if val, err := strconv.Atoi(l); err == nil {
+			limit = val
+		}
+	}
+
+	// Validate limit bounds
+	if limit < 1 {
+		limit = 1
+	}
+	if limit > 100 {
+		limit = 100
+	}
+
+	// Execute use case
+	res, err := h.listCatalogUC.Execute(r.Context(), offset, limit)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

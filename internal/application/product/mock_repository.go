@@ -10,25 +10,25 @@ import (
 
 // MockRepository is a mock implementation of product.Repository for testing.
 type MockRepository struct {
-	FindAllFunc func(ctx context.Context) ([]product.Product, error)
+	FindAllFunc func(ctx context.Context, offset, limit int) ([]product.Product, int64, error)
 }
 
 // NewMockRepository creates a new MockRepository with default behavior.
 func NewMockRepository() *MockRepository {
 	return &MockRepository{
-		FindAllFunc: func(ctx context.Context) ([]product.Product, error) {
-			return []product.Product{}, nil
+		FindAllFunc: func(ctx context.Context, offset, limit int) ([]product.Product, int64, error) {
+			return []product.Product{}, 0, nil
 		},
 	}
 }
 
 // FindAll delegates to the mocked function.
-func (m *MockRepository) FindAll(ctx context.Context) ([]product.Product, error) {
-	return m.FindAllFunc(ctx)
+func (m *MockRepository) FindAll(ctx context.Context, offset, limit int) ([]product.Product, int64, error) {
+	return m.FindAllFunc(ctx, offset, limit)
 }
 
 // WithFindAll sets the behavior for FindAll method.
-func (m *MockRepository) WithFindAll(fn func(ctx context.Context) ([]product.Product, error)) *MockRepository {
+func (m *MockRepository) WithFindAll(fn func(ctx context.Context, offset, limit int) ([]product.Product, int64, error)) *MockRepository {
 	m.FindAllFunc = fn
 	return m
 }
