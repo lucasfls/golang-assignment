@@ -10,25 +10,25 @@ import (
 
 // MockRepository is a mock implementation of product.Repository for testing.
 type MockRepository struct {
-	FindAllFunc func(ctx context.Context, offset, limit int) ([]product.Product, int64, error)
+	FindAllFunc func(ctx context.Context, offset, limit int, filters ...product.FindAllFilter) ([]product.Product, int64, error)
 }
 
 // NewMockRepository creates a new MockRepository with default behavior.
 func NewMockRepository() *MockRepository {
 	return &MockRepository{
-		FindAllFunc: func(ctx context.Context, offset, limit int) ([]product.Product, int64, error) {
+		FindAllFunc: func(ctx context.Context, offset, limit int, filters ...product.FindAllFilter) ([]product.Product, int64, error) {
 			return []product.Product{}, 0, nil
 		},
 	}
 }
 
 // FindAll delegates to the mocked function.
-func (m *MockRepository) FindAll(ctx context.Context, offset, limit int) ([]product.Product, int64, error) {
-	return m.FindAllFunc(ctx, offset, limit)
+func (m *MockRepository) FindAll(ctx context.Context, offset, limit int, filters ...product.FindAllFilter) ([]product.Product, int64, error) {
+	return m.FindAllFunc(ctx, offset, limit, filters...)
 }
 
 // WithFindAll sets the behavior for FindAll method.
-func (m *MockRepository) WithFindAll(fn func(ctx context.Context, offset, limit int) ([]product.Product, int64, error)) *MockRepository {
+func (m *MockRepository) WithFindAll(fn func(ctx context.Context, offset, limit int, filters ...product.FindAllFilter) ([]product.Product, int64, error)) *MockRepository {
 	m.FindAllFunc = fn
 	return m
 }
@@ -101,4 +101,9 @@ func mustDecimal(s string) decimal.Decimal {
 		panic(err)
 	}
 	return d
+}
+
+// MustDecimal is an exported version of mustDecimal for use in tests.
+func MustDecimal(s string) decimal.Decimal {
+	return mustDecimal(s)
 }

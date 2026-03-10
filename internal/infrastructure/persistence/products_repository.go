@@ -19,19 +19,31 @@ func NewProductsRepository(db *gorm.DB) *ProductsRepository {
 	}
 }
 
-// FindAll retrieves all products with pagination support.
+// FindAll retrieves products with pagination and optional filters support.
 // Returns slice of products, total count, and error.
-func (r *ProductsRepository) FindAll(ctx context.Context, offset, limit int) ([]product.Product, int64, error) {
+func (r *ProductsRepository) FindAll(ctx context.Context, offset, limit int, filters ...product.FindAllFilter) ([]product.Product, int64, error) {
 	var persistenceProducts []Product
 	var total int64
 
-	// Get total count
-	if err := r.db.WithContext(ctx).Model(&Product{}).Count(&total).Error; err != nil {
+	// Start building query with joined categories table
+	query := r.db.WithContext(ctx).Joins("JOIN categories ON products.category_id = categories.id")
+
+	// Apply filters if provided
+	if len(filters) > 0 && filters[0].CategoryCode != "" {
+		query = query.Where("categories.code = ?", filters[0].CategoryCode)
+	}
+
+	if len(filters) > 0 && !filters[0].MaxPrice.IsZero() {
+		query = query.Where("products.price < ?", filters[0].MaxPrice)
+	}
+
+	// Get total count with filters applied
+	if err := query.Model(&Product{}).Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
 
-	// Get paginated results
-	if err := r.db.WithContext(ctx).
+	// Get paginated results with filters
+	if err := query.
 		Offset(offset).
 		Limit(limit).
 		Preload("Category").

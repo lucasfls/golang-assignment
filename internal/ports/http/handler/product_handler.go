@@ -24,6 +24,8 @@ func NewProductHandler(listCatalogUC *appproduct.ListCatalogUseCase) *ProductHan
 // Query parameters:
 //   - offset: starting position (default 0)
 //   - limit: number of items to return (default 10, max 100, min 1)
+//   - category: filter by category code (optional)
+//   - maxPrice: filter for products with price less than this value (optional)
 func (h *ProductHandler) HandleListCatalog(w http.ResponseWriter, r *http.Request) {
 	// Parse and validate pagination parameters
 	offset := 0
@@ -48,8 +50,20 @@ func (h *ProductHandler) HandleListCatalog(w http.ResponseWriter, r *http.Reques
 		limit = 100
 	}
 
-	// Execute use case
-	res, err := h.listCatalogUC.Execute(r.Context(), offset, limit)
+	// Parse optional filters
+	filter := appproduct.NewFilter()
+	if category := r.URL.Query().Get("category"); category != "" {
+		filter.SetCategory(category)
+	}
+	if maxPrice := r.URL.Query().Get("maxPrice"); maxPrice != "" {
+		// Attempt to parse maxPrice as decimal
+		if price, err := appproduct.ParseDecimal(maxPrice); err == nil {
+			filter.SetMaxPrice(price)
+		}
+	}
+
+	// Execute use case with filters
+	res, err := h.listCatalogUC.Execute(r.Context(), offset, limit, filter.ToFilterOptions()...)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

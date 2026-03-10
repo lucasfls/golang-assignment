@@ -10,7 +10,7 @@ import (
 
 func TestListCatalogUseCase_Execute(t *testing.T) {
 	// Arrange
-	mockRepo := NewMockRepository().WithFindAll(func(ctx context.Context, offset, limit int) ([]product.Product, int64, error) {
+	mockRepo := NewMockRepository().WithFindAll(func(ctx context.Context, offset, limit int, filters ...product.FindAllFilter) ([]product.Product, int64, error) {
 		return GetSampleProducts(), 3, nil
 	})
 
@@ -32,7 +32,7 @@ func TestListCatalogUseCase_Execute(t *testing.T) {
 
 func TestListCatalogUseCase_Execute_WithVariants(t *testing.T) {
 	// Arrange
-	mockRepo := NewMockRepository().WithFindAll(func(ctx context.Context, offset, limit int) ([]product.Product, int64, error) {
+	mockRepo := NewMockRepository().WithFindAll(func(ctx context.Context, offset, limit int, filters ...product.FindAllFilter) ([]product.Product, int64, error) {
 		return GetSampleProducts(), 3, nil
 	})
 
@@ -51,7 +51,7 @@ func TestListCatalogUseCase_Execute_WithVariants(t *testing.T) {
 
 func TestListCatalogUseCase_Execute_WithOffset(t *testing.T) {
 	// Arrange
-	mockRepo := NewMockRepository().WithFindAll(func(ctx context.Context, offset, limit int) ([]product.Product, int64, error) {
+	mockRepo := NewMockRepository().WithFindAll(func(ctx context.Context, offset, limit int, filters ...product.FindAllFilter) ([]product.Product, int64, error) {
 		// Verify offset and limit are passed correctly
 		assert.Equal(t, 1, offset)
 		assert.Equal(t, 10, limit)
@@ -74,7 +74,7 @@ func TestListCatalogUseCase_Execute_WithOffset(t *testing.T) {
 
 func TestListCatalogUseCase_Execute_WithCustomLimit(t *testing.T) {
 	// Arrange
-	mockRepo := NewMockRepository().WithFindAll(func(ctx context.Context, offset, limit int) ([]product.Product, int64, error) {
+	mockRepo := NewMockRepository().WithFindAll(func(ctx context.Context, offset, limit int, filters ...product.FindAllFilter) ([]product.Product, int64, error) {
 		// Verify custom limit is passed
 		assert.Equal(t, 0, offset)
 		assert.Equal(t, 2, limit)
@@ -96,7 +96,7 @@ func TestListCatalogUseCase_Execute_WithCustomLimit(t *testing.T) {
 
 func TestListCatalogUseCase_Execute_WithMaxLimit(t *testing.T) {
 	// Arrange
-	mockRepo := NewMockRepository().WithFindAll(func(ctx context.Context, offset, limit int) ([]product.Product, int64, error) {
+	mockRepo := NewMockRepository().WithFindAll(func(ctx context.Context, offset, limit int, filters ...product.FindAllFilter) ([]product.Product, int64, error) {
 		// Use case receives already-validated limit from handler
 		return GetSampleProducts(), 3, nil
 	})
