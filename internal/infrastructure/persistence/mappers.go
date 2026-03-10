@@ -1,6 +1,7 @@
 package persistence
 
 import (
+	"github.com/mytheresa/go-hiring-challenge/internal/domain/category"
 	"github.com/mytheresa/go-hiring-challenge/internal/domain/product"
 )
 
@@ -32,8 +33,8 @@ func (v *Variant) ToDomainVariant() product.Variant {
 }
 
 // ToDomainCategory converts a persistence Category model to a domain Category.
-func (c *Category) ToDomainCategory() *product.Category {
-	return &product.Category{
+func (c *Category) ToDomainCategory() *category.Category {
+	return &category.Category{
 		ID:   c.ID,
 		Code: c.Code,
 		Name: c.Name,
@@ -68,7 +69,7 @@ func FromDomainVariant(v product.Variant) Variant {
 }
 
 // FromDomainCategory converts a domain Category to a persistence Category model.
-func FromDomainCategory(c *product.Category) *Category {
+func FromDomainCategory(c *category.Category) *Category {
 	return &Category{
 		ID:   c.ID,
 		Code: c.Code,

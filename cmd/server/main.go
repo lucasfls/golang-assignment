@@ -38,7 +38,7 @@ func main() {
 	productRepo := persistence.NewProductsRepository(db)
 
 	// Initialize application use cases
-	listCatalogUC := appproduct.NewListCatalogUseCase(productRepo, nil)
+	listCatalogUC := appproduct.NewListCatalogUseCase(productRepo)
 
 	// Initialize HTTP handlers (ports)
 	productHandler := handler.NewProductHandler(listCatalogUC)

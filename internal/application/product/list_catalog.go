@@ -38,7 +38,6 @@ type ListCatalogUseCase struct {
 // NewListCatalogUseCase creates a new instance of ListCatalogUseCase.
 func NewListCatalogUseCase(
 	productRepo product.Repository,
-	_ product.CategoryRepository,
 ) *ListCatalogUseCase {
 	return &ListCatalogUseCase{
 		productRepo: productRepo,
@@ -57,8 +56,9 @@ func (uc *ListCatalogUseCase) Execute(ctx context.Context, req ListCatalogReques
 	productDTOs := make([]ProductDTO, len(products))
 	for i, p := range products {
 		variants := make([]VariantDTO, len(p.Variants))
+		productPrice := p.Price.InexactFloat64()
 		for j, v := range p.Variants {
-			price := 0.0
+			price := productPrice // Default to product price
 			if !v.Price.IsZero() {
 				price = v.Price.InexactFloat64()
 			}
@@ -71,7 +71,7 @@ func (uc *ListCatalogUseCase) Execute(ctx context.Context, req ListCatalogReques
 
 		productDTOs[i] = ProductDTO{
 			Code:     p.Code,
-			Price:    p.Price.InexactFloat64(),
+			Price:    productPrice,
 			Variants: variants,
 		}
 	}
