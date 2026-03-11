@@ -2,6 +2,7 @@ package product
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/mytheresa/go-hiring-challenge/internal/domain/product"
 )
@@ -22,7 +23,7 @@ type Response struct {
 func (lc *ListCatalog) List(ctx context.Context, offset, limit int, filter product.FindAllFilter) (*Response, error) {
 	products, total, err := lc.repo.FindAll(ctx, offset, limit, filter)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("list catalog: %w", err)
 	}
 
 	return &Response{

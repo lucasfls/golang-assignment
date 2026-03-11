@@ -2,6 +2,7 @@ package category
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/mytheresa/go-hiring-challenge/internal/domain/category"
 )
@@ -17,8 +18,13 @@ func NewCreateCategory(repo category.Repository) *CreateCategory {
 func (cc *CreateCategory) Create(ctx context.Context, code, name string) (*category.Category, error) {
 	cat, err := category.New(code, name)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("validate category: %w", err)
 	}
 
-	return cc.repo.Create(ctx, cat.Code, cat.Name)
+	created, err := cc.repo.Create(ctx, cat.Code, cat.Name)
+	if err != nil {
+		return nil, fmt.Errorf("create category: %w", err)
+	}
+
+	return created, nil
 }

@@ -40,7 +40,7 @@ func (gpd *GetProductDetail) Get(ctx context.Context, code string) (*DetailRespo
 
 	prod, err := gpd.repo.FindByCode(ctx, code)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("get product detail: %w", err)
 	}
 
 	variants := make([]VariantResponse, len(prod.Variants))

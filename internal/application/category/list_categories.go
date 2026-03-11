@@ -2,6 +2,7 @@ package category
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/mytheresa/go-hiring-challenge/internal/domain/category"
 )
@@ -15,5 +16,9 @@ func NewListCategories(repo category.Repository) *ListCategories {
 }
 
 func (lc *ListCategories) List(ctx context.Context) ([]category.Category, error) {
-	return lc.repo.FindAll(ctx)
+	categories, err := lc.repo.FindAll(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("list categories: %w", err)
+	}
+	return categories, nil
 }
