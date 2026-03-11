@@ -3,6 +3,15 @@
 This repository contains a Go application for managing products and their prices, including functionalities for CRUD operations and seeding the database with initial data.
 
 ## Project Structure
+These are the current implemented layer of the project:
+
+- domain: core business entities
+- application: use cases
+- ports: HTTP handlers
+- infrastructure: persistence/repository
+
+This separation helps keep business logic independent
+from delivery mechanisms.
 
 ```
 cmd/
@@ -17,6 +26,7 @@ internal/
 
 sql/              # Database migrations
 ```
+
 
 ## Setup Code Repository
 
@@ -37,3 +47,22 @@ sql/              # Database migrations
   - `make docker-down`: Stop docker containers
 
 Follow up for the assignemnt here: [ASSIGNMENT.md](ASSIGNMENT.md)
+
+## Testing
+
+The test suite focuses on:
+
+- business rules in use cases
+- HTTP handler behavior
+- pagination edge cases
+- invalid user inputs
+
+
+## Further improvements
+
+This API could be improved with:
+
+- Structured logging (e.g. zerolog)
+- Metrics and observability (e.g. Prometheus)
+- Health check endpoints for monitoring and CI/CD pipelines
+- End-to-end tests (e.g. Ginkgo)
