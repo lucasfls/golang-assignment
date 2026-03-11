@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	appcategory "github.com/mytheresa/go-hiring-challenge/internal/application/category"
+	"github.com/mytheresa/go-hiring-challenge/internal/ports/http/response"
 )
 
 type CategoryHandler struct {
@@ -22,12 +23,11 @@ func NewCategoryHandler(list *appcategory.ListCategories, create *appcategory.Cr
 func (h *CategoryHandler) HandleListCategories(w http.ResponseWriter, r *http.Request) {
 	categories, err := h.list.List(r.Context())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		response.Error(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(categories)
+	response.JSON(w, http.StatusOK, categories)
 }
 
 type CreateCategoryRequest struct {
@@ -38,17 +38,15 @@ type CreateCategoryRequest struct {
 func (h *CategoryHandler) HandleCreateCategory(w http.ResponseWriter, r *http.Request) {
 	var req CreateCategoryRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
+		response.Error(w, http.StatusBadRequest, err)
 		return
 	}
 
 	category, err := h.create.Create(r.Context(), req.Code, req.Name)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		response.Error(w, http.StatusBadRequest, err)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(category)
+	response.JSON(w, http.StatusCreated, category)
 }

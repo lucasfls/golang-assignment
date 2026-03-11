@@ -1,12 +1,13 @@
 package handler
 
 import (
-	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
 	appproduct "github.com/mytheresa/go-hiring-challenge/internal/application/product"
 	"github.com/mytheresa/go-hiring-challenge/internal/domain/product"
+	"github.com/mytheresa/go-hiring-challenge/internal/ports/http/response"
 	"github.com/shopspring/decimal"
 )
 
@@ -45,12 +46,11 @@ func (h *ProductHandler) HandleListCatalog(w http.ResponseWriter, r *http.Reques
 
 	res, err := h.listCatalog.List(r.Context(), offset, limit, filter)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		response.Error(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(res)
+	response.JSON(w, http.StatusOK, res)
 }
 
 func parseIntParam(r *http.Request, key string, defaultVal int) int {
@@ -65,16 +65,15 @@ func parseIntParam(r *http.Request, key string, defaultVal int) int {
 func (h *ProductHandler) HandleGetProductDetail(w http.ResponseWriter, r *http.Request) {
 	code := r.PathValue("code")
 	if code == "" {
-		http.Error(w, "product code is required", http.StatusBadRequest)
+		response.Error(w, http.StatusBadRequest, fmt.Errorf("product code is required"))
 		return
 	}
 
 	res, err := h.getDetail.Get(r.Context(), code)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		response.Error(w, http.StatusNotFound, err)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(res)
+	response.JSON(w, http.StatusOK, res)
 }
