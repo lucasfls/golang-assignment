@@ -3,16 +3,30 @@
 This repository contains a Go application for managing products and their prices, including functionalities for CRUD operations and seeding the database with initial data.
 
 ## Project Structure
+These are the current implemented layer of the project:
 
-1. **cmd/**: Contains the main application and seed command entry points.
+- domain: core business entities
+- application: use cases
+- ports: HTTP handlers
+- infrastructure: persistence/repository
 
-   - `server/main.go`: The main application entry point, serves the REST API.
-   - `seed/main.go`: Command to seed the database with initial product data.
+This separation helps keep business logic independent
+from delivery mechanisms.
 
-2. **app/**: Contains the application logic.
-3. **sql/**: Contains a very simple database migration scripts setup.
-4. **models/**: Contains the data models and repositories used in the application.
-5. `.env`: Environment variables file for configuration.
+```
+cmd/
+├── server/     # API server
+└── seed/       # Database seeding
+
+internal/
+├── domain/           # Business entities
+├── application/      # Service logic
+├── infrastructure/   # Database repositories
+└── ports/           # HTTP handlers
+
+sql/              # Database migrations
+```
+
 
 ## Setup Code Repository
 
@@ -24,11 +38,31 @@ This repository contains a Go application for managing products and their prices
 - Ensure you have Go installed on your machine.
 - Ensure you have Docker installed on your machine.
 - Important makefile targets:
-  - `make tidy`: will install all dependencies.
-  - `make docker-up`: will start the required infrastructure services via docker containers.
-  - `make seed`: ⚠️ Will destroy and re-create the database tables.
-  - `make test`: Will run the tests.
-  - `make run`: Will start the application.
-  - `make docker-down`: Will stop the docker containers.
+  - `make tidy`: Install all dependencies
+  - `make docker-up`: Start infrastructure services via docker
+  - `make seed`: ⚠️ Destroy and re-create database tables
+  - `make run`: Start the application
+  - `make test`: Run tests with coverage
+  - `make validate`: Run comprehensive validation (format, vet, staticcheck, tests, deps, security)
+  - `make docker-down`: Stop docker containers
 
 Follow up for the assignemnt here: [ASSIGNMENT.md](ASSIGNMENT.md)
+
+## Testing
+
+The test suite focuses on:
+
+- business rules in use cases
+- HTTP handler behavior
+- pagination edge cases
+- invalid user inputs
+
+
+## Further improvements
+
+This API could be improved with:
+
+- Structured logging (e.g. zerolog)
+- Metrics and observability (e.g. Prometheus)
+- Health check endpoints for monitoring and CI/CD pipelines
+- End-to-end tests (e.g. Ginkgo)
